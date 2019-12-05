@@ -39,7 +39,25 @@ public class Deck {
         return cards.size();
     }
 
-    public void addCard() {
-        //Add card to the deck?
+    public Card getLastCard() {
+        return cards.get(cards.size() - 1);
+    }
+
+    public void removeLastCard() {
+        cards.remove(cards.size() - 1); // Remove the card displayed in getLastCard()
+    }
+}
+
+public class Deal extends Deck {
+
+    private ArrayList<Card> hand;
+    // Constructor.  Create arraylist object hand.
+    public Deal() {
+        hand = new ArrayList<>();
+    }
+
+    public void addCard(Deck deck) {
+        hand.add(0, deck.getLastCard()); // Add last card to hand
+        deck.removeLastCard();
     }
 }
