@@ -19,19 +19,26 @@ package Uno;
 */
 
 public class Card {
-    int number;
-    char color;
+    private int number;
+    private char color;
     // Construtor for card data.
     Card(int cardN, char cardC) {
         number = cardN;
         color = cardC;
     }
 
-    public int getNumber() {
+    public int getCardNumber() {
         return number;
     }
-    public char getColor() {
+    public char getCardColor() {
         return color;
+    }
+    // Static methods that call these previous
+    public static char getCardColor(Card cards) {
+        return cards.getCardColor();
+    }
+    public static int getCardNumber(Card cards) {
+        return cards.getCardNumber();
     }
 
     // Output card data as a string.  If we need to call a string to display.  Override normal toString method

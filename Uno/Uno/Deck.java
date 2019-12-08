@@ -28,6 +28,10 @@ public class Deck {
             cards.add(new Card(14, 'w'));
         }
     }
+    // Add a card to the deck
+    public void addCard(Card addedCard) {
+        cards.add(addedCard);
+    }
     // Shuffle the array of card objects
     public void shuffle() {
         for (int i = 0; i <= 2; i++)
@@ -39,7 +43,7 @@ public class Deck {
         return cards.size();
     }
 
-    public Card getLastCard() {
+    public Card getLast() {
         return cards.get(cards.size() - 1);
     }
 
