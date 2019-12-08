@@ -75,9 +75,11 @@ public class Deal extends Deck {
         return hand.size();
     }
     public void printArray() {
+        // Print the hand array
         System.out.prinln(hand.toString());
     }
     public Card getLast() {
+        // Get the last card in the hand
         return hand.get(hand.size() -1);
     }
 }
