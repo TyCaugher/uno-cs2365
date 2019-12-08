@@ -25,15 +25,34 @@ public class Main {
         deck.shuffle();
         boolean compNum = false;
 
-        do {
-            try {
-                // Game here
-            }
+        switch (cpuCount) {
+            case 1:
+                player.addCard(deck);
+                cpu1.addCard(deck);
+            case 2:
+                player.addCard(deck);
+                cpu1.addCard(deck);
+                cpu2.addCard(deck);
+            case 3:
+                player.addCard(deck);
+                cpu1.addCard(deck);
+                cpu2.addCard(deck);
+                cpu3.addCard(deck);
+            default:
+                System.out.print("Invalid int cpuCount");
+                break;
         }
+
+        discardPile.addCard(deck); // Adds the top card as the discard pile "face up"
+
+        int playerTurn = 1;
+        boolean uno = false; // True if a player has uno.
+
+
     }
 
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Scanner input = new Scanner(System.in);
         boolean menuRepeat = true;
         int menuChoice;
@@ -66,7 +85,7 @@ public class Main {
                 }
 
             }
-            catch (InterruptedException e) {
+            catch (InputMismatchException e) {
                 System.out.println(e);
             }
         }

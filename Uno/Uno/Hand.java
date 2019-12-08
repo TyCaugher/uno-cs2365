@@ -35,4 +35,37 @@ public class Hand extends Deck {
         // Get the last card in the hand
         return hand.get(hand.size() -1);
     }
+
+    public static boolean checkUno(Hand play) {
+        boolean uno = false;
+        if (play.getSize() == 1) {
+            uno = true;
+        } else {
+            uno = false;
+        }
+        return uno;
+    }
+
+    public static void printHand(Hand player1, boolean cardDrawn, boolean uno, boolean unoCalled) {
+        //Method to print the status of the user's hand.
+        int x = 0;
+        for ( int i = 0; i < player1.getSize(); i++) {
+            x += 1;
+            System.out.print(x + ". " + player1.getCard(x)); // Print out the player's hand
+        }
+        x++;
+        // Print a menu of possible options
+        if (!cardDrawn) {
+            System.out.println(x + ". Draw Card");
+        }
+        else if (cardDrawn) {
+            System.out.println(x + ". End Turn");
+        }
+        x++;
+        if (uno && !unoCalled) {
+            System.out.println(x + ". Uno");
+        } else if (uno && unoCalled) {
+            System.out.println("Uno called");
+        }
+    }
 }
