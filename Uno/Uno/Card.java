@@ -63,6 +63,7 @@ public class Card {
                 break;
             case 'w':
                 cardC = "Wild"; // For wild card color
+                break;
         }
 
         if (number <= 9) {

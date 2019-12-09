@@ -18,7 +18,7 @@ public class Game {
     static Hand discardPile = new Hand();
 
     int nCpu;
-    boolean reverse = false;
+    static boolean reverse = false;
     static boolean skip = false;
     static boolean draw2 = false;
     static boolean draw4 = false;
@@ -31,6 +31,7 @@ public class Game {
                 System.out.print("Which card do you want to play: ");
                 choice = s.nextInt();
                 s.nextLine();
+                System.out.println(choice);
             }
             catch (InputMismatchException e) {
                 System.out.println("Invalid input");
@@ -45,7 +46,8 @@ public class Game {
         System.out.println(player1.getSize());
         int x = 0;
         for ( int i = 0; i < player1.getSize(); i++) {
-            System.out.print(i + ") " + player1.getCard(i) + " "); // Print out the player's hand
+            x = i + 1;
+            System.out.print("[(" + x + ") " + player1.getCard(i) + "] "); // Print out the player's hand
         }
         x++;
         // Print a menu of possible options
@@ -71,7 +73,7 @@ public class Game {
     public static Card wildColor(int cardNum) {
         System.out.println("What color do you want?");
         String input = s.nextLine();
-        char color = 'a';
+        char color = 'w';
         input = input.toLowerCase();
 
         switch (input.charAt(0)) {
@@ -129,7 +131,6 @@ public class Game {
         else if (Card.getCardNumber(discardPile.getLast()) == 13) {
             discardPile.addCard(wildColor(13));
         }
-        printDiscard();
         int playerTurn = 1;
         boolean uno = false; // True if uno has been called
 
@@ -143,20 +144,20 @@ public class Game {
 
                 boolean calledUno = false;
                 int cardPlayed = 0;
-                System.out.println(); // Line break
                 int choice = 0;
                 Boolean cardDrawn = false; // True if the player has drawn a card or not.
 
                 do {
                     // uno = checkUno();
-                    System.out.println();
+                    System.out.println("+--------------------------+");
+                    printDiscard();
+                    System.out.println("+--------------------------+");
                     printHand(player, cardDrawn, uno, calledUno);
-                    player.printArray();
                     System.out.println(); // Break
 
                     choice = playCard();
 
-                    while (choice > player.getSize() || choice < 0) { // If the input taken is greater than hand size or less than 0
+                    while (choice > player.getSize() + 1 || choice < 0) { // If the input taken is greater than hand size or less than 0
                         System.out.println("Invalid input");
                         choice = playCard(); // Again
                     }
@@ -183,14 +184,53 @@ public class Game {
                             System.out.println("Please select a valid card");
                         }
                     }
-                    else if (Card.getCardColor(player.getCard(element)) == 'a') {
+                    else if (Card.getCardColor(player.getCard(element)) == 'w' && Card.getCardNumber(player.getCard(element)) == 13) {
+                        discardPile.addCard(wildColor(13));
+                        player.removeCard(element);
+                    }
+                    else if (Card.getCardColor(player.getCard(element)) == 'w' && Card.getCardNumber(player.getCard(element)) == 14) {
+                        discardPile.addCard(wildColor(14));
+                        draw4 = true;
+                        player.removeCard(element);
+                        cardPlayed = 1; // Break the loop
+                    }
+                    else if (Card.getCardColor(player.getCard(element)) == Card.getCardColor(discardPile.getLast()) || Card.getCardNumber(player.getCard(element)) == Card.getCardNumber(discardPile.getLast())) {
+                        // If a skip, reverse, or draw 2 is played
+                        discardPile.addCard(player.getCard(element));
 
+                        switch (Card.getCardNumber(player.getCard(element))) {
+                            case 10:
+                                skip = true;
+                                break;
+                            case 11:
+                                draw2 = true;
+                                break;
+                            case 12:
+                                // Check if reverse is already true
+                                if (reverse) {
+                                    reverse = false;
+                                }
+                                else if (!reverse) {
+                                    reverse = true;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+
+                        discardPile.addCard(player.getCard(element));
+                        player.removeCard(element);
+                        cardPlayed = 1;
+
+                    }
+                    else {
+                        System.out.println("+----------------------------+");
+                        System.out.println("| Please select a valid card |");
+                        System.out.println("+----------------------------+");
                     }
                 } while (cardPlayed == 0);
             }
         } while (!gameEnded);
-
-
     }
 
 
