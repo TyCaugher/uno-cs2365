@@ -42,10 +42,10 @@ public class Game {
 
     public static void printHand(Hand player1, boolean cardDrawn, boolean uno, boolean unoCalled) {
         //Method to print the status of the user's hand.
+        System.out.println(player1.getSize());
         int x = 0;
         for ( int i = 0; i < player1.getSize(); i++) {
-            x += 1;
-            System.out.print(x + ") " + player1.getCard(x) + "|"); // Print out the player's hand
+            System.out.print(i + ") " + player1.getCard(i) + " "); // Print out the player's hand
         }
         x++;
         // Print a menu of possible options
