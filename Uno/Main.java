@@ -3,7 +3,7 @@ import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Main extends Game {
+public class Main extends Gameloop {
 
     public static void main(String[] args) throws InterruptedException {
         Scanner input = new Scanner(System.in);
@@ -30,7 +30,7 @@ public class Main extends Game {
                 menuChoice = input.nextInt();
                 switch (menuChoice) {
                     case 1:
-                        newGame(nCpu);
+                        game();
                         break;
                     case 2:
                         //Change the number of players

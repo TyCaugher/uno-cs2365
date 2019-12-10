@@ -67,20 +67,25 @@ public class Card {
         if (number <= 9) {
             cardN = Integer.toString(number); // Just print the number as a string if its a normal number card
         }
-        else {
+        else if (number > 9) {
             switch(number) {
                 case 10:
                     cardN = "Skip";
+                    break;
                 case 11:
                     cardN = "Draw 2";
+                    break;
                 case 12:
                     cardN = "Reverse";
+                    break;
                 case 13:
                     cardN = "Wild";
+                    break;
                 case 14:
                     cardN = "Wild +4";
+                    break;
             }
         }
-        return (cardC + ", " + cardN);
+        return (cardC + " " + cardN);
     }
 }

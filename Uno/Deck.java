@@ -4,7 +4,6 @@ import java.util.Collections;
 // Deck object.
 public class Deck {
     char[] colors = {'r', 'b', 'g', 'y'};
-    int[] numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
     // Create array lists of card objects
     public ArrayList<Card> cards; // The deck// Drawable cards still in the deck.
@@ -13,7 +12,7 @@ public class Deck {
         // Add 2 numbres for each color. Add 0 seperately. (There's only 1 zero per color.)
         cards = new ArrayList<>(); // Create the actual object
         for (char c : colors) {
-            for (int n : numbers) {
+            for (int n = 0; n <= 12; n++) {
                 cards.add(new Card(n, c));
                 cards.add(new Card(n, c));
             }

@@ -34,6 +34,10 @@ public class Hand extends Deck {
         return hand.get(hand.size() - 1);
     }
 
+    public void clearHand() {
+        hand.clear();
+    }
+
     public static boolean checkUno(Hand play) {
         boolean uno = false;
         if (play.getSize() == 1) {
