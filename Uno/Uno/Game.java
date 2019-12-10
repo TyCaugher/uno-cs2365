@@ -17,6 +17,8 @@ public class Game {
     static Scanner s = new Scanner(System.in);
     static Hand discardPile = new Hand();
 
+    static Card inPlay;
+
     int nCpu;
     static boolean reverse = false;
     static boolean skip = false;
@@ -32,8 +34,7 @@ public class Game {
                 choice = s.nextInt();
                 s.nextLine();
                 System.out.println(choice);
-            }
-            catch (InputMismatchException e) {
+            } catch (InputMismatchException e) {
                 System.out.println("Invalid input");
                 s.nextLine();
             }
@@ -45,7 +46,7 @@ public class Game {
         //Method to print the status of the user's hand.
         System.out.println(player1.getSize());
         int x = 0;
-        for ( int i = 0; i < player1.getSize(); i++) {
+        for (int i = 0; i < player1.getSize(); i++) {
             x = i + 1;
             System.out.print("[(" + x + ") " + player1.getCard(i) + "] "); // Print out the player's hand
         }
@@ -53,8 +54,7 @@ public class Game {
         // Print a menu of possible options
         if (!cardDrawn) {
             System.out.println(x + ". Draw Card");
-        }
-        else if (cardDrawn) {
+        } else if (cardDrawn) {
             System.out.println(x + ". End Turn");
         }
         x++;
@@ -66,8 +66,9 @@ public class Game {
     }
 
     public static void printDiscard() {
-        System.out.println("Discard pile: ");
+        System.out.println("+------Card in play------+");
         System.out.println(discardPile.getLast());
+        System.out.println("+------------------------+");
     }
 
     public static Card wildColor(int cardNum) {
@@ -152,6 +153,8 @@ public class Game {
                     System.out.println("+--------------------------+");
                     printDiscard();
                     System.out.println("+--------------------------+");
+                    System.out.println("Cards left in deck: " + deck.getDeckSize());
+                    System.out.println("+--------------------------+");
                     printHand(player, cardDrawn, uno, calledUno);
                     System.out.println(); // Break
 
@@ -167,34 +170,28 @@ public class Game {
                         if (!cardDrawn) { // If no card has been drawn yet
                             player.addCard(deck);
                             cardDrawn = true;
-                        }
-                        else if (cardDrawn) {
+                        } else if (cardDrawn) {
                             System.out.println("A card has already been drawn!!");
                             cardPlayed = 1;
                         }
-                    }
-                    else if (choice == player.getSize() + 2) { // Choice to call uno.
+                    } else if (choice == player.getSize() + 2) { // Choice to call uno.
                         if (!calledUno) {
                             System.out.println(); // Line break
                             System.out.println("You have called uno!");
                             calledUno = true;
-                        }
-                        else if (calledUno || !uno) { // Have already called, or it isnt allowed
+                        } else if (calledUno || !uno) { // Have already called, or it isnt allowed
                             System.out.println();
                             System.out.println("Please select a valid card");
                         }
-                    }
-                    else if (Card.getCardColor(player.getCard(element)) == 'w' && Card.getCardNumber(player.getCard(element)) == 13) {
+                    } else if (Card.getCardColor(player.getCard(element)) == 'a' && Card.getCardNumber(player.getCard(element)) == 13) {
                         discardPile.addCard(wildColor(13));
                         player.removeCard(element);
-                    }
-                    else if (Card.getCardColor(player.getCard(element)) == 'w' && Card.getCardNumber(player.getCard(element)) == 14) {
+                    } else if (Card.getCardColor(player.getCard(element)) == 'a' && Card.getCardNumber(player.getCard(element)) == 14) {
                         discardPile.addCard(wildColor(14));
                         draw4 = true;
                         player.removeCard(element);
                         cardPlayed = 1; // Break the loop
-                    }
-                    else if (Card.getCardColor(player.getCard(element)) == Card.getCardColor(discardPile.getLast()) || Card.getCardNumber(player.getCard(element)) == Card.getCardNumber(discardPile.getLast())) {
+                    } else if (Card.getCardColor(player.getCard(element)) == Card.getCardColor(discardPile.getLast()) || Card.getCardNumber(player.getCard(element)) == Card.getCardNumber(discardPile.getLast())) {
                         // If a skip, reverse, or draw 2 is played
                         discardPile.addCard(player.getCard(element));
 
@@ -209,21 +206,17 @@ public class Game {
                                 // Check if reverse is already true
                                 if (reverse) {
                                     reverse = false;
-                                }
-                                else if (!reverse) {
+                                } else if (!reverse) {
                                     reverse = true;
                                 }
                                 break;
                             default:
                                 break;
                         }
-
-                        discardPile.addCard(player.getCard(element));
                         player.removeCard(element);
                         cardPlayed = 1;
 
-                    }
-                    else {
+                    } else {
                         System.out.println("+----------------------------+");
                         System.out.println("| Please select a valid card |");
                         System.out.println("+----------------------------+");
@@ -233,5 +226,26 @@ public class Game {
         } while (!gameEnded);
     }
 
+    public static void checkDraw(Deck deck, Hand discardPile) {
+        if (deck.getDeckSize() <= 4) {
+            System.out.println();
+            System.out.println("Shuffling Deck");
+            System.out.println();
+            for (int i = 0; i < discardPile.getSize(); i++) {
+                if (Card.getCardNumber(discardPile.getLast()) == 13 && Card.getCardColor(discardPile.getLast()) != 'a') {
+                    discardPile.removeCard(discardPile.getSize() - 1);
+                    discardPile.addCard(new Card(13, 'a'));
+                } else if (Card.getCardNumber(discardPile.getLast()) == 14 && Card.getCardColor(discardPile.getLast()) != 'a') {
+                    discardPile.removeCard(discardPile.getSize() - 1);
+                    discardPile.addCard(new Card(14, 'a'));
+                } else {
+                    deck.addCard(discardPile.getLast());
+                    discardPile.removeCard(discardPile.getSize() - 1);
+                }
+            }
+            deck.shuffle();
+        } else {
 
+        }
+    }
 }

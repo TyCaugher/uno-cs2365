@@ -11,7 +11,7 @@ public class Hand extends Deck {
     }
 
     public void addCard(Deck deck) {
-        hand.add(0, deck.getLast()); // Add last card to hand
+        hand.add(hand.size(), deck.getLast()); // Add last card to hand
         deck.removeLastCard();
     }
 
@@ -33,7 +33,7 @@ public class Hand extends Deck {
     }
     public Card getLast() {
         // Get the last card in the hand
-        return hand.get(hand.size() -1);
+        return hand.get(hand.size() - 1);
     }
 
     public static boolean checkUno(Hand play) {

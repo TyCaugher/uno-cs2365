@@ -61,8 +61,8 @@ public class Card {
             case 'g':
                 cardC = "Green";
                 break;
-            case 'w':
-                cardC = "Wild"; // For wild card color
+            case 'a':
+                cardC = "All"; // For wild card color
                 break;
         }
 

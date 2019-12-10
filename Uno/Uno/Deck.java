@@ -25,8 +25,8 @@ public class Deck {
 
         //Create 4 of each wild cards.
         for (int i = 0; i <= 3; i++) {
-            cards.add(new Card(13, 'w'));
-            cards.add(new Card(14, 'w'));
+            cards.add(new Card(13, 'a'));
+            cards.add(new Card(14, 'a'));
         }
     }
     // Add a card to the deck
