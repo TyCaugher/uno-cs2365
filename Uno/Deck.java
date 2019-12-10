@@ -9,7 +9,7 @@ public class Deck {
     public ArrayList<Card> cards; // The deck// Drawable cards still in the deck.
     // Deck constructor.
     public Deck() {
-        // Add 2 numbres for each color. Add 0 seperately. (There's only 1 zero per color.)
+        // Add 2 numbers for each color. Add 0 separately. (There's only 1 zero per color.)
         cards = new ArrayList<>(); // Create the actual object
         for (char c : colors) {
             for (int n = 0; n <= 12; n++) {
