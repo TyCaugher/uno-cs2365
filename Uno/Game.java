@@ -1,5 +1,3 @@
-package Uno;
-
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
@@ -124,6 +122,7 @@ public class Game {
         }
 
         discardPile.addCard(deck); // Adds the top card as the discard pile "face up"
+        inPlay = discardPile.getLast();
         // If the first card is wild
         if (Card.getCardNumber(discardPile.getLast()) == 14) {
             discardPile.addCard(wildColor(14));
@@ -151,7 +150,7 @@ public class Game {
                 do {
                     // uno = checkUno();
                     System.out.println("+--------------------------+");
-                    printDiscard();
+                    System.out.println(inPlay);
                     System.out.println("+--------------------------+");
                     System.out.println("Cards left in deck: " + deck.getDeckSize());
                     System.out.println("+--------------------------+");
@@ -192,8 +191,8 @@ public class Game {
                         player.removeCard(element);
                         cardPlayed = 1; // Break the loop
                     } else if (Card.getCardColor(player.getCard(element)) == Card.getCardColor(discardPile.getLast()) || Card.getCardNumber(player.getCard(element)) == Card.getCardNumber(discardPile.getLast())) {
-                        // If a skip, reverse, or draw 2 is played
-                        discardPile.addCard(player.getCard(element));
+                        // If a skip, reverse, or draw 2 is played;
+                        inPlay = player.getCard(element);
 
                         switch (Card.getCardNumber(player.getCard(element))) {
                             case 10:

@@ -1,5 +1,3 @@
-package Uno;
-
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -9,8 +7,7 @@ public class Deck {
     int[] numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 
     // Create array lists of card objects
-    public ArrayList<Card> cards; // The deck
-    public ArrayList<Card> draw; // Drawable cards still in the deck.
+    public ArrayList<Card> cards; // The deck// Drawable cards still in the deck.
     // Deck constructor.
     public Deck() {
         // Add 2 numbres for each color. Add 0 seperately. (There's only 1 zero per color.)
