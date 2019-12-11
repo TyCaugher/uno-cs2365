@@ -1,43 +1,286 @@
+package Uno;
+
 import java.util.*;
 
 public class Gameloop {
+    static int nCpu = 1;
     static Hand player = new Hand();
     static Hand cpu1 = new Hand();
-   // static ArrayList<Hand> turnOrder = new ArrayList<>();
-    static Deck deck = new  Deck();
+    static Deck deck = new Deck();
     static Scanner s = new Scanner(System.in);
-    static boolean reverse = false;
-    static int winStatus; // 1 - win, -1 lost
-    static int nCpu = 3;
+    static boolean skip;
+    static boolean drawTwo;
+    static boolean reverse;
+    static boolean drawFour;
+    static boolean winStatus;
+    static char colorNow;
+    static Card inPlay;
+    static int turn;
+
+    public static void gameloop() {
+        skip = false;
+        drawTwo = false;
+        reverse = false;
+        drawFour = false;
+        winStatus = false;
+        player.clearHand(); // Clear hands
+        cpu1.clearHand();
+        deck.shuffle();
+        deck.shuffle();
+        winStatus = false;
+
+        System.out.print("Dealing cards...");
+        drawCard(7, player);
+        drawCard(7, cpu1);
+        /*for(int i = 1; i <= nCpu; i++){
+            drawCard(7, cpu1);
+        }*/
+
+        while (true) {
+            if (Card.getCardNumber(deck.getLast()) == 13 || Card.getCardNumber(deck.getLast()) == 14) {
+                deck.shuffle();
+            } else {
+                inPlay = deck.getLast();
+                deck.removeLastCard();
+                System.out.println("The card in play: " + inPlay.toString());
+                System.out.println();
+                break;
+            }
+        }
+
+        do {
+            for(int i = 0; i <= nCpu; i++) {
+                /*if(reverse){
+                    turn--;
+                }
+                else{
+                    turn++;
+                }*/
+                if (inPlay.getCardColor() != 'a')
+                    colorNow = inPlay.getCardColor();
+                if (i == 0) {
+                    if (playerTurn()) {
+                        System.out.println("You win! Thanks for playing.");
+                        winStatus = true;
+                    }
+                } else {
+                    if (cpuTurn()) {
+                        System.out.println("CPU wins! Thanks for playing.");
+                        winStatus = true;
+                    }
+                }
+
+            }
+        } while (!winStatus);
+    }
+
+    public static boolean playerTurn() {
+        if (skip){
+            System.out.println("You've been skipped.");
+            skip = false;
+            return false;
+        }
+        else if (drawTwo){
+            drawCard(2, player);
+            System.out.println("You've drawn 2 cards.");
+            drawTwo = false;
+        }
+        else if (drawFour){
+            drawCard(4, player);
+            System.out.println("You've drawn 4 cards.");
+            drawFour = false;
+        }
+
+        Scanner input = new Scanner(System.in);
+        int choice;
+        boolean cardDrawn = false;
+        boolean cardPlayed = false;
+        boolean validWild = false;
+        System.out.println("+------IN PLAY----+");
+        System.out.println("| " + inPlay.toString());
+        System.out.println("+-----------------+");
+        System.out.println();
+        System.out.println("+-- Your turn!  Make your move. --+");
+
+
+        while (!cardPlayed) {
+
+            printHand(player, cardDrawn);
+            System.out.println("(1 -" + (player.getSize()) + ") Makes your move.");
+
+            choice = choice();
+            int cIndex = choice;
+            // Check the conditions of the card and player's choice
+            if (choice < player.getSize()) {
+                Card cardChoice = player.getCard(cIndex);
+                if (cardChoice.getCardNumber() == 10 && cardChoice.getCardColor() == colorNow) {
+                    //skip
+                    skip = true;
+                    inPlay = cardChoice;
+                    player.removeCard(cIndex);
+                    cardPlayed = true;
+                } else if (cardChoice.getCardNumber() == 11 && cardChoice.getCardColor() == colorNow) {
+                    //draw 2
+                    drawTwo = true;
+                    inPlay = cardChoice;
+                    player.removeCard(cIndex);
+                    cardPlayed = true;
+                } else if (cardChoice.getCardNumber() == 12 && cardChoice.getCardColor() == colorNow) {
+                    //reverse
+                    reverse = !reverse;
+                    inPlay = cardChoice;
+                    player.removeCard(cIndex);
+                    cardPlayed = true;
+                } else if (cardChoice.getCardNumber() > 12) {
+
+                    System.out.println("What color would you like the active card to be? (r, b, g, y)");
+                    do {
+                        if (input.hasNext("r")) {
+                            System.out.println("Color is set to red.");
+                            colorNow = 'r';
+                            validWild = true;
+                        } else if (input.hasNext("g")) {
+                            System.out.println("Color is set to green.");
+                            colorNow = 'g';
+                            validWild = true;
+                        } else if (input.hasNext("b")) {
+                            System.out.println("Color is set to blue.");
+                            colorNow = 'b';
+                            validWild = true;
+                        } else if (input.hasNext("y")) {
+                            System.out.println("Color is set to yellow.");
+                            colorNow = 'y';
+                            validWild = true;
+                        } else {
+                            System.out.println("Cannot read chosen colour. Please enter \"r\", \"b\", \"g\", or \"y\".");
+                        }
+                    } while (!validWild);
+                    if (cardChoice.getCardNumber() == 14) {
+                        drawFour = true;
+                    }
+                    player.removeCard(cIndex);
+                    cardPlayed = true;
+                } else if (cardChoice.getCardNumber() == inPlay.getCardNumber() || cardChoice.getCardColor() == colorNow) {
+                    //regular
+                    inPlay = cardChoice;
+                    player.removeCard(cIndex);
+                    cardPlayed = true;
+                } else{
+                    System.out.println("Invalid card selection. Please select a valid card or draw a card/end your turn.");
+                }
+            }else if (choice == player.getSize() & !cardDrawn) {
+                System.out.println("Drawing a card");
+                // Draw a card
+                drawCard(1, player);
+                cardDrawn = true;
+            } else if (choice == player.getSize() & cardDrawn) {
+                // End turn
+                System.out.println("Turn ended!");
+                cardPlayed = true;
+            } else {
+                System.out.println("Invalid input. Please enter a number between 1 and " + (player.getSize()));
+            }
+        }
+        return player.getSize() == 0;
+    }
+
+
+    public static boolean cpuTurn() {
+        if (skip){
+            System.out.println("CPU has been skipped.");
+            skip = false;
+            return false;
+        }
+        else if (drawTwo){
+            drawCard(2, cpu1);
+            System.out.println("CPU has drawn 2 cards.");
+            drawTwo = false;
+        }
+        else if (drawFour){
+            drawCard(4, cpu1);
+            System.out.println("CPU has drawn 4 cards.");
+            drawFour = false;
+        }
+        boolean cardPlayed = false;
+        System.out.println("CPU's turn!");
+        Card cardChoice;
+
+        for (int j = 0; true; j++) {
+            System.out.println("CPU is thinking.");
+            for (int i = 0; i < cpu1.getSize(); i++) {
+                if (j == 1){
+                    i = cpu1.getSize()-1;
+                }
+                cardChoice = cpu1.getCard(i);
+                if (cardChoice.getCardNumber() == 10 && cardChoice.getCardColor() == colorNow) {
+                    //skip
+                    skip = true;
+                    inPlay = cardChoice;
+                    cpu1.removeCard(i);
+                    cardPlayed = true;
+                    break;
+                } else if (cardChoice.getCardNumber() == 11 && cardChoice.getCardColor() == colorNow) {
+                    //draw 2
+                    drawTwo = true;
+                    inPlay = cardChoice;
+                    cpu1.removeCard(i);
+                    cardPlayed = true;
+                    break;
+                } else if (cardChoice.getCardNumber() == 12 && cardChoice.getCardColor() == colorNow) {
+                    //reverse
+                    reverse = !reverse;
+                    inPlay = cardChoice;
+                    cpu1.removeCard(i);
+                    cardPlayed = true;
+                    break;
+                } else if (cardChoice.getCardNumber() > 12) {
+                    char[] colors = {'r', 'b', 'g', 'y'};
+                    Random r = new Random(); // choose a random color.
+                    int rand = r.nextInt(4);
+                    switch (colors[rand]) {
+                        case 'r': System.out.println("Color is set to red");
+                        break;
+                        case 'b': System.out.println("Color is set to blue");
+                            break;
+                        case 'g': System.out.println("Color is set to green");
+                            break;
+                        case 'y': System.out.println("Color is set to yellow");
+                            break;
+                    }
+                    colorNow = colors[rand];
+                    if (cardChoice.getCardNumber() == 14) {
+                        drawFour = true;
+                    }
+                    inPlay = cardChoice;
+                    cpu1.removeCard(i);
+                    cardPlayed = true;
+                    break;
+                } else if (cardChoice.getCardNumber() == inPlay.getCardNumber() || cardChoice.getCardColor() == colorNow) {
+                    //regular
+                    inPlay = cardChoice;
+                    cpu1.removeCard(i);
+                    cardPlayed = true;
+                    break;
+                }
+            }
+            if (cardPlayed)
+                break;
+            else if (j == 1){
+                System.out.println("CPU has no cards to play. How unfortunate.");
+                break;
+            }
+            drawCard(1, cpu1);
+            System.out.println("CPU drew a card.");
+        }
+        System.out.println("CPU has " + cpu1.getSize() + " cards remaining.");
+        return cpu1.getSize() == 0;
+    }
 
     public static void drawCard(int cardAmt, Hand target) {
         for (int i = 0; i < cardAmt; i++) {
             target.addCard(deck);
         }
     }
-
- /*   public static void actionCardCheck(Card card, int turn) {
-        int number = card.getCardNumber();
-        switch (number) {
-            case 10: // Skip
-                turnOrder.remove(turn +  1);
-                System.out.println(turnOrder.get(turn + 1) + " has been skipped!");
-                break;
-            case 11: // Draw 2
-                drawCard(2, turnOrder.get(turn + 1));
-                System.out.println(turnOrder.get(turn + 1) + " has drawn  2!");
-                System.out.println(turnOrder.get(turn + 1) + ": \"You'll pay for that >:(\"");
-                break;
-            case 12: // Reverse
-                Collections.reverse(turnOrder);
-                System.out.println("Turn order has been reversed!");
-                reverse =true;
-                break;
-            default:
-                break;
-        }
-    }
-    */
 
     public static int choice() {
         int choice = 0;
@@ -53,193 +296,18 @@ public class Gameloop {
         return choice;
     }
 
-    public static void printHand(Hand player1, boolean cardDrawn) {
+    public static void printHand(Hand player, boolean cardDrawn) {
         //Method to print the status of the user's hand.
-        System.out.println(player1.getSize());
-        int x = 0;
-        for (int i = 0; i < player1.getSize(); i++) {
-            x = i + 1;
-            System.out.print("[" + x + "] " + player1.getCard(i) + " ██ "); // Print out the player's hand
+        //System.out.println(player.getSize());
+        int i;
+        for (i = 1; i < player.getSize(); i++) {
+            System.out.print("[" + i + "] " + player.getCard(i) + " ██ "); // Print out the player's hand
         }
-        x++;
         // Print a menu of possible options
         if (!cardDrawn) {
-            System.out.println(" (" + x + ") Draw Card");
-        } else if (cardDrawn) {
-            System.out.println(" (" + x + ") End Turn");
+            System.out.println(" (" + i + ") Draw Card");
+        } else {
+            System.out.println(" (" + i + ") End Turn");
         }
-        x++;
-    }
-
-    public static int playableIndex(Hand cpu, Card top) {
-        // returns the index of the cpu's hand that's playable.
-        Card card;
-        int playableIndex = -1;
-        for (int i = 0; i < cpu.getSize(); i++) {
-            card = cpu.getCard(i);
-            if (card.getCardNumber() == top.getCardNumber() || card.getCardColor() == top.getCardColor()) {
-                playableIndex = i;
-                break;
-            }
-            else if (card.getCardNumber() > 9 & card.getCardNumber() < 13) {
-                playableIndex = i;
-                break;
-            }
-            else if (card.getCardNumber() > 12) {
-                playableIndex = i;
-                break;
-            }
-        }
-        return playableIndex;
-    }
-
-    public static void game() {
-        Scanner input;
-        Card inPlay; // The card currently in play
-        String colorNow;
-
-        //int pIndex  = turnOrder.indexOf(player);
-
-        player.clearHand(); // Clear hands
-        cpu1.clearHand();
-        deck.shuffle();
-        deck.shuffle();
-        winStatus = 0;
-        int playerTurn = 0; // Set to false at the end of turn or if skipped
-
-        System.out.print("Dealing cards...");
-        drawCard(7, player);
-        drawCard(7, cpu1);
-
-        // Check to make sure the top card is valid and not wild.
-        while (true) {
-            if (Card.getCardNumber(deck.getLast()) == 13 || Card.getCardNumber(deck.getLast()) == 14) {
-                deck.shuffle();
-            }
-            else {
-                inPlay = deck.getLast();
-                deck.removeLastCard();
-                System.out.println("The card in play: " + inPlay.toString());
-                System.out.println();
-                break;
-            }
-        }
-
-        do { // The game loop
-            // Create the regular turn order.
-            // Add the top card of the deck into play, unless its a wild card
-            int choice = 0;
-            pTurn:
-            if (playerTurn == 0) {
-                boolean cardDrawn = false;
-                boolean cardPlayed = false;
-                System.out.println("+------IN PLAY----+");
-                System.out.println("| " + inPlay.toString());
-                System.out.println("+-----------------+");
-                System.out.println();
-                System.out.println("+-- Your turn!  Make your move. --+");
-
-                printHand(player, cardDrawn);
-                System.out.println("(1 -" + player.getSize() + ") Makes your move.");
-
-                while (!cardPlayed) {
-
-                    choice = choice();
-                    int cIndex = choice - 1;
-                    // Check the conditions of the card and player's choice
-                    if (choice <= player.getSize()) {
-                        Card cardChoice = player.getCard(cIndex);
-
-                        if (cardChoice.getCardNumber() == inPlay.getCardNumber() || cardChoice.getCardColor() == inPlay.getCardColor()) {
-                            inPlay = cardChoice;
-                            player.removeCard(cIndex);
-                            cardPlayed = true;
-                            // Advance the turnorder
-                            cardPlayed = true;
-                            if (reverse)
-                                playerTurn = 0;
-                            else
-                                playerTurn += 1;
-                        } else if (cardChoice.getCardNumber() == 10) {
-
-                        } else if (cardChoice.getCardNumber() > 12) {
-                            int x;
-                            cardPlayed = true;
-                            switch (cardChoice.getCardNumber()) {
-                                case 13: case 14:
-                                    // Check input.
-                                    do {
-                                        System.out.println("What color would you like the active card to be? (r, b, g, y)");
-                                        input = new Scanner(System.in);
-                                    } while (!input.hasNext("R..|r..|G....|g....|B...|b...|Y.....|y....."));
-                                    if (input.hasNext("R..|r..") )
-                                        colorNow = "Red";
-                                    else if (input.hasNext("G....|g....") )
-                                        colorNow = "Green";
-                                    else if (input.hasNext("B...|b...") )
-                                        colorNow = "Blue";
-                                    else if (input.hasNext("Y.....|y.....") )
-                                        colorNow = "Yellow";
-                                    if (cardChoice.getCardNumber() == 14) {
-                                        drawCard(4, cpu1);
-                                        System.out.println("Tom has drawn 4 cards");
-                                    }
-                                    player.removeCard(cIndex);
-                                    break;
-                            }
-                        } else {
-                            System.out.println("Invalid card");
-                            continue;
-                        }
-                    }
-                    else if (choice == player.getSize() + 1 & !cardDrawn) {
-                        // Draw a card
-                        drawCard(1, player);
-                        cardDrawn = true;
-                        printHand(player, cardDrawn);
-                    }
-                    else if (choice == player.getSize() + 1 & cardDrawn) {
-                        // End turn
-                        System.out.println("Turn ended!");
-                        playerTurn += 1;
-                        break;
-                    }
-                }
-                System.out.println("Turn over!");
-            } else {
-
-                String[] colors = {"Red", "Blue", "Green", "Yellow"};
-
-                System.out.println("CPU turns!");
-                int cpu1Choice = playableIndex(cpu1, inPlay);
-
-                if (cpu1Choice != -1) {
-                    inPlay = cpu1.getCard(cpu1Choice);
-                    cpu1.removeCard(cpu1Choice);
-                    Card targetCard = cpu1.getCard(cpu1Choice);
-                    System.out.println("CPU1 played " + cpu1.getCard(cpu1Choice));
-
-                    switch (targetCard.getCardNumber()) {
-                        case 10: // Skip
-
-                        case 11: // Draw 2
-
-                        case 13: case 14:
-                            Random r = new Random(colors.length); // choose a random color.
-                            String chosenColor = colors[r];
-                            if (targetCard.getCardNumber()  == 14) {
-                                drawCard(2, player);
-                                System.out.println("You had to draw 4 cards!");
-                            }
-
-                    }
-                } else {
-                    System.out.println("CPU1: Darn no cards I can play.");
-                    drawCard(1, cpu1);
-                }
-                playerTurn = 0;
-            }
-            // CPU turns will go down here.
-        } while (winStatus != -1 || winStatus != 1);
     }
 }

@@ -1,9 +1,11 @@
+package Uno;
+
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Random;
 import java.util.Scanner;
 
-public class Main extends Gameloop {
+public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         Scanner input = new Scanner(System.in);
@@ -30,20 +32,20 @@ public class Main extends Gameloop {
                 menuChoice = input.nextInt();
                 switch (menuChoice) {
                     case 1:
-                        game();
+                        Gameloop.gameloop();
                         break;
                     case 2:
                         //Change the number of players
                         validInput = false;
-                        System.out.println("Enter how many computer opponents do you want (minimum is 1, maximum 3):");
+                        System.out.println("Enter how many computer opponents do you want (minimum is 1, maximum 5):");
                         while (!validInput) {
                             while (!input.hasNextInt()) {
-                                System.out.println("Invalid input. Enter a number between 1 and 3.");
+                                System.out.println("Invalid input. Enter a number between 1 and 5.");
                                 input.next();
                             }
                             nCpu = input.nextInt();
-                            if (nCpu > 3 || nCpu < 1) {
-                                System.out.println("Invalid input. Enter a number between 1 and 3.");
+                            if (nCpu > 5 || nCpu < 1) {
+                                System.out.println("Invalid input. Enter a number between 1 and 5.");
                             } else {
                                 validInput = true;
                             }
