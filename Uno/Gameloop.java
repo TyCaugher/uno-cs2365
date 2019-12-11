@@ -1,14 +1,9 @@
-import java.util.ArrayList;
-import java.util.InputMismatchException;
-import java.util.Scanner;
-import java.util.Collections;
+import java.util.*;
 
 public class Gameloop {
     static Hand player = new Hand();
     static Hand cpu1 = new Hand();
-    static Hand cpu2 = new Hand();
-    static Hand cpu3 = new Hand();
-    static ArrayList<Hand> turnOrder = new ArrayList<>();
+   // static ArrayList<Hand> turnOrder = new ArrayList<>();
     static Deck deck = new  Deck();
     static Scanner s = new Scanner(System.in);
     static boolean reverse = false;
@@ -21,8 +16,9 @@ public class Gameloop {
         }
     }
 
-    public static void actionCardCheck(int n, int turn) {
-        switch (n) {
+ /*   public static void actionCardCheck(Card card, int turn) {
+        int number = card.getCardNumber();
+        switch (number) {
             case 10: // Skip
                 turnOrder.remove(turn +  1);
                 System.out.println(turnOrder.get(turn + 1) + " has been skipped!");
@@ -41,6 +37,7 @@ public class Gameloop {
                 break;
         }
     }
+    */
 
     public static int choice() {
         int choice = 0;
@@ -74,20 +71,37 @@ public class Gameloop {
         x++;
     }
 
+    public static int playableIndex(Hand cpu, Card top) {
+        // returns the index of the cpu's hand that's playable.
+        Card card;
+        int playableIndex = -1;
+        for (int i = 0; i < cpu.getSize(); i++) {
+            card = cpu.getCard(i);
+            if (card.getCardNumber() == top.getCardNumber() || card.getCardColor() == top.getCardColor()) {
+                playableIndex = i;
+                break;
+            }
+            else if (card.getCardNumber() > 9 & card.getCardNumber() < 13) {
+                playableIndex = i;
+                break;
+            }
+            else if (card.getCardNumber() > 12) {
+                playableIndex = i;
+                break;
+            }
+        }
+        return playableIndex;
+    }
+
     public static void game() {
         Scanner input;
         Card inPlay; // The card currently in play
         String colorNow;
 
-        turnOrder.add(player);
-        turnOrder.add(cpu1);
-        turnOrder.add(cpu2);
-        turnOrder.add(cpu3);
+        //int pIndex  = turnOrder.indexOf(player);
 
         player.clearHand(); // Clear hands
         cpu1.clearHand();
-        cpu2.clearHand();
-        cpu3.clearHand();
         deck.shuffle();
         deck.shuffle();
         winStatus = 0;
@@ -115,6 +129,7 @@ public class Gameloop {
             // Create the regular turn order.
             // Add the top card of the deck into play, unless its a wild card
             int choice = 0;
+            pTurn:
             if (playerTurn == 0) {
                 boolean cardDrawn = false;
                 boolean cardPlayed = false;
@@ -145,9 +160,8 @@ public class Gameloop {
                                 playerTurn = 0;
                             else
                                 playerTurn += 1;
-                        } else if (cardChoice.getCardNumber() > 9 & cardChoice.getCardNumber() < 13) {
-                            actionCardCheck(cardChoice.getCardNumber(), turnOrder.indexOf(player));
-                            cardPlayed = true;
+                        } else if (cardChoice.getCardNumber() == 10) {
+
                         } else if (cardChoice.getCardNumber() > 12) {
                             int x;
                             cardPlayed = true;
@@ -167,12 +181,15 @@ public class Gameloop {
                                     else if (input.hasNext("Y.....|y.....") )
                                         colorNow = "Yellow";
                                     if (cardChoice.getCardNumber() == 14) {
-                                        drawCard(4, turnOrder.get(playerTurn + 1));
-                                        System.out.println(turnOrder.get(playerTurn + 1) + " has drawn 4 cards");
+                                        drawCard(4, cpu1);
+                                        System.out.println("Tom has drawn 4 cards");
                                     }
                                     player.removeCard(cIndex);
                                     break;
                             }
+                        } else {
+                            System.out.println("Invalid card");
+                            continue;
                         }
                     }
                     else if (choice == player.getSize() + 1 & !cardDrawn) {
@@ -189,6 +206,38 @@ public class Gameloop {
                     }
                 }
                 System.out.println("Turn over!");
+            } else {
+
+                String[] colors = {"Red", "Blue", "Green", "Yellow"};
+
+                System.out.println("CPU turns!");
+                int cpu1Choice = playableIndex(cpu1, inPlay);
+
+                if (cpu1Choice != -1) {
+                    inPlay = cpu1.getCard(cpu1Choice);
+                    cpu1.removeCard(cpu1Choice);
+                    Card targetCard = cpu1.getCard(cpu1Choice);
+                    System.out.println("CPU1 played " + cpu1.getCard(cpu1Choice));
+
+                    switch (targetCard.getCardNumber()) {
+                        case 10: // Skip
+
+                        case 11: // Draw 2
+
+                        case 13: case 14:
+                            Random r = new Random();
+                            String chosenColor = colors[]
+                            if (targetCard.getCardNumber()  == 14) {
+                                drawCard(2, player);
+                                System.out.println("You had to draw 4 cards!");
+                            }
+
+                    }
+                } else {
+                    System.out.println("CPU1: Darn no cards I can play.");
+                    drawCard(1, cpu1);
+                }
+                playerTurn = 0;
             }
             // CPU turns will go down here.
         } while (winStatus != -1 || winStatus != 1);
