@@ -225,8 +225,8 @@ public class Gameloop {
                         case 11: // Draw 2
 
                         case 13: case 14:
-                            Random r = new Random();
-                            String chosenColor = colors[]
+                            Random r = new Random(colors.length); // choose a random color.
+                            String chosenColor = colors[r];
                             if (targetCard.getCardNumber()  == 14) {
                                 drawCard(2, player);
                                 System.out.println("You had to draw 4 cards!");
