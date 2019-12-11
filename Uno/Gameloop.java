@@ -15,9 +15,8 @@ public class Gameloop {
     static boolean winStatus;
     static char colorNow;
     static Card inPlay;
-    static int turn;
 
-    public static void gameloop() {
+    public static void newGame() {
         skip = false;
         drawTwo = false;
         reverse = false;
@@ -62,11 +61,13 @@ public class Gameloop {
                     if (playerTurn()) {
                         System.out.println("You win! Thanks for playing.");
                         winStatus = true;
+                        break;
                     }
                 } else {
                     if (cpuTurn()) {
                         System.out.println("CPU wins! Thanks for playing.");
                         winStatus = true;
+                        break;
                     }
                 }
 
@@ -99,14 +100,13 @@ public class Gameloop {
         System.out.println("+------IN PLAY----+");
         System.out.println("| " + inPlay.toString());
         System.out.println("+-----------------+");
-        System.out.println();
         System.out.println("+-- Your turn!  Make your move. --+");
 
 
         while (!cardPlayed) {
 
             printHand(player, cardDrawn);
-            System.out.println("(1 -" + (player.getSize()) + ") Makes your move.");
+            System.out.println("(1 -" + (player.getSize()) + ") Make your move.");
 
             choice = choice();
             int cIndex = choice;
@@ -123,6 +123,7 @@ public class Gameloop {
                     //draw 2
                     drawTwo = true;
                     inPlay = cardChoice;
+                    drawCard(2, cpu1);
                     player.removeCard(cIndex);
                     cardPlayed = true;
                 } else if (cardChoice.getCardNumber() == 12 && cardChoice.getCardColor() == colorNow) {
@@ -132,7 +133,7 @@ public class Gameloop {
                     player.removeCard(cIndex);
                     cardPlayed = true;
                 } else if (cardChoice.getCardNumber() > 12) {
-
+                    inPlay = cardChoice;
                     System.out.println("What color would you like the active card to be? (r, b, g, y)");
                     do {
                         if (input.hasNext("r")) {
@@ -181,7 +182,8 @@ public class Gameloop {
                 System.out.println("Invalid input. Please enter a number between 1 and " + (player.getSize()));
             }
         }
-        return player.getSize() == 0;
+
+        return (player.getSize() - 1 == 0);
     }
 
 
@@ -206,7 +208,6 @@ public class Gameloop {
         Card cardChoice;
 
         for (int j = 0; true; j++) {
-            System.out.println("CPU is thinking.");
             for (int i = 0; i < cpu1.getSize(); i++) {
                 if (j == 1){
                     i = cpu1.getSize()-1;
@@ -239,7 +240,7 @@ public class Gameloop {
                     int rand = r.nextInt(4);
                     switch (colors[rand]) {
                         case 'r': System.out.println("Color is set to red");
-                        break;
+                            break;
                         case 'b': System.out.println("Color is set to blue");
                             break;
                         case 'g': System.out.println("Color is set to green");
@@ -252,6 +253,7 @@ public class Gameloop {
                         drawFour = true;
                     }
                     inPlay = cardChoice;
+                    System.out.println("CPU has played " + cardChoice.toString());
                     cpu1.removeCard(i);
                     cardPlayed = true;
                     break;
@@ -263,8 +265,10 @@ public class Gameloop {
                     break;
                 }
             }
-            if (cardPlayed)
+            if (cardPlayed) {
+                System.out.println("CPU has played " + inPlay.toString());
                 break;
+            }
             else if (j == 1){
                 System.out.println("CPU has no cards to play. How unfortunate.");
                 break;

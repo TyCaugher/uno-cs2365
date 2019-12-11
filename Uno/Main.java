@@ -13,15 +13,15 @@ public class Main {
         boolean validInput;
         int menuChoice;
         int nCpu = 1;
-        System.out.println("Welcome to UNO!");
+        System.out.println(" __    __  .__   __.   ______   \n|  |  |  | |  \\ |  |  /  __  \\ \n|  |  |  | |   \\|  | |  |  |  | ");
+        System.out.println("|  |  |  | |  . `  | |  |  |  | \n|  `--'  | |  |\\   | |  `--'  | \n \\______/  |__| \\__|  \\______/  \n");
         System.out.println("Program by Tyler Kauffman and Christopher Bednarz\n");
 
         do {
             System.out.println("----Main Menu----\n");
             System.out.println("Select an option by entering a number:");
             System.out.println("(1) Start a new game.");
-            System.out.println("(2) Set how many players there will be.");
-            System.out.println("(3) Exit program.");
+            System.out.println("(2) Exit program.");
 
             if (!input.hasNextInt()) {
                 System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
@@ -32,28 +32,9 @@ public class Main {
                 menuChoice = input.nextInt();
                 switch (menuChoice) {
                     case 1:
-                        Gameloop.gameloop();
+                        Gameloop.newGame();
                         break;
                     case 2:
-                        //Change the number of players
-                        validInput = false;
-                        System.out.println("Enter how many computer opponents do you want (minimum is 1, maximum 5):");
-                        while (!validInput) {
-                            while (!input.hasNextInt()) {
-                                System.out.println("Invalid input. Enter a number between 1 and 5.");
-                                input.next();
-                            }
-                            nCpu = input.nextInt();
-                            if (nCpu > 5 || nCpu < 1) {
-                                System.out.println("Invalid input. Enter a number between 1 and 5.");
-                            } else {
-                                validInput = true;
-                            }
-                        }
-                        System.out.println("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n");
-                        System.out.println("Computer players set to " + nCpu + "\n");
-                        break;
-                    case 3:
                         //Exits program
                         repeatMenu = false;
                         break;
